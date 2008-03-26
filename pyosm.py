@@ -55,8 +55,8 @@ class OSMXMLFile(object):
             way.nodes = [self.nodes[node_pl.id] for node_pl in way.nodes]
 
         # convert them back to lists
-        self.nodes = self.nodes.items()
-        self.ways = self.ways.items()
+        self.nodes = self.nodes.values()
+        self.ways = self.ways.values()
 
 
 class OSMXMLFileParser(xml.sax.ContentHandler):
