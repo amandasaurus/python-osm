@@ -82,6 +82,8 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
             assert self.curr_node is None, "curr_node (%r) is non-none" % (self.curr_node)
             assert self.curr_way is not None, "curr_way is None"
             self.curr_way.nodes.append(NodePlaceHolder(id=attrs['ref']))
+        else:
+            print "Unknown node: "+name
 
 
     def endElement(self, name):
