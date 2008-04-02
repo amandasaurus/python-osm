@@ -2,6 +2,8 @@
 import xml.sax
 
 class Node(object):
+    __slots__ = ['id', 'lon', 'lat', 'tags']
+
     def __init__(self, id=None, lon=None, lat=None, tags=None):
         self.id = id
         self.lon, self.lat = lon, lat
@@ -14,6 +16,8 @@ class Node(object):
         return "Node(id=%r, lon=%r, lat=%r, tags=%r)" % (self.id, self.lon, self.lat, self.tags)
 
 class Way(object):
+    __slots__ = ['id', 'nodes', 'tags']
+
     def __init__(self, id, nodes=None, tags=None):
         self.id = id
         if nodes:
@@ -29,6 +33,8 @@ class Way(object):
         return "Way(id=%r, nodes=%r, tags=%r)" % (self.id, self.nodes, self.tags)
 
 class NodePlaceHolder(object):
+    __slots__ = ['id']
+
     def __init__(self, id):
         self.id = id
 
