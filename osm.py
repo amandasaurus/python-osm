@@ -48,7 +48,7 @@ class OSMXMLFile(object):
         self.nodes = {}
         self.ways = {}
         self.__parse()
-        print repr(self.ways)
+        #print repr(self.ways)
 
     def __parse(self):
         """Parse the given XML file"""
@@ -104,6 +104,8 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
 
 if __name__ == '__main__':
     osm = OSMXMLFile("./lucan.osm.xml")
+    import code
+    code.interact(local=locals())
 
 
 
