@@ -41,6 +41,28 @@ class NodePlaceHolder(object):
     def __repr__(self):
         return "NodePlaceHolder(id=%r)" % (self.id)
 
+class Relation(object):
+    __slots__ = ['id', 'roles', 'tags']
+
+    def __init__(self, id):
+        self.id = id
+        self.roles = {}
+        self.tags = {}
+
+    def add(item, role=None):
+        """
+        Add the item to this relation with that role. If role is unspecified,
+        it's ""
+        """
+        if role == None:
+            role = ""
+
+        if role not in self.roles:
+            self.roles[role] = set()
+        self.roles.add(item)
+
+
+
 class OSMXMLFile(object):
     def __init__(self, filename):
         self.filename = filename
