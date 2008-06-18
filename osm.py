@@ -1,6 +1,8 @@
 #! /usr/bin/python
 import xml.sax
 
+OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
+
 class Node(object):
     __slots__ = ['id', 'lon', 'lat', 'tags']
 
@@ -123,6 +125,10 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
         elif name == "way":
             self.containing_obj.ways[self.curr_way.id] = self.curr_way
             self.curr_way = None
+
+def api_get_node(node_id):
+    url = "%s/node/%s" % (OSM_API_BASE_URL, node_id)
+    print url
 
 if __name__ == '__main__':
     osm = OSMXMLFile("./lucan.osm.xml")
