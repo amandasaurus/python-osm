@@ -199,7 +199,6 @@ class GPSData(object):
         point_last_time = None
 
         while page == 0 or point_last_time == 5000:
-            print "Downloading page %d" % page
             tmpfile_fp, tmpfilename = tempfile.mkstemp(suffix=".gpx",
                 prefix="osm-gps_%s,%s,%s,%s_%d_" % (self.left, self.bottom, self.right, self.top, page))
             urllib.urlretrieve(url % page, filename=tmpfilename )
@@ -207,7 +206,6 @@ class GPSData(object):
             self._parse_file(tmpfilename)
             point_last_time = sum(len(way.nodes) for way in self.tracks) - old_points_total
             page += 1
-            print "Got %d points in the last run" % point_last_time
 
 
     def _parse_file(self, filename):
