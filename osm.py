@@ -183,13 +183,14 @@ class GPSData(object):
     """
     Downloads data GPS track data from OpenStreetMap Server
     """
-    def __init__(self, left, bottom, right, top):
+    def __init__(self, left, bottom, right, top, download=True):
         self.left = left
         self.bottom = bottom
         self.right = right
         self.top = top
         self.tracks = []
-        self._download_from_api()
+        if download:
+            self._download_from_api()
 
     def _download_from_api(self):
         url = "http://api.openstreetmap.org/api/0.5/trackpoints?bbox=%s,%s,%s,%s&page=%%d" % (self.left, self.bottom, self.right, self.top)
