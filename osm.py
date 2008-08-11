@@ -1,5 +1,5 @@
 #! /usr/bin/python
-import xml.sax, math
+import xml.sax, math, tempfile, urllib
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
 
@@ -32,7 +32,7 @@ class Node(object):
 class Way(object):
     __slots__ = ['id', 'nodes', 'tags']
 
-    def __init__(self, id, nodes=None, tags=None):
+    def __init__(self, id=None, nodes=None, tags=None):
         self.id = id
         if nodes:
             self.nodes = nodes
@@ -105,6 +105,7 @@ class OSMXMLFile(object):
         self.relations = {}
         self.invalid_ways = []
         self.__parse()
+
 
     def __parse(self):
         """Parse the given XML file"""
@@ -188,13 +189,42 @@ class GPSData(object):
         self.right = right
         self.top = top
         self.tracks = []
+        self._download_from_api()
 
-    def __parse_file(filename):
+    def _download_from_api(self):
+        url = "http://api.openstreetmap.org/api/0.5/trackpoints?bbox=%s,%s,%s,%s&page=%%d" % (self.left, self.bottom, self.right, self.top)
+
+        page = 0
+        point_last_time = None
+
+        while page == 0 or point_last_time == 5000:
+            print "Downloading page %d" % page
+            tmpfile_fp, tmpfilename = tempfile.mkstemp(suffix=".gpx",
+                prefix="osm-gps_%s,%s,%s,%s_%d_" % (self.left, self.bottom, self.right, self.top, page))
+            urllib.urlretrieve(url % page, filename=tmpfilename )
+            old_points_total = sum(len(way.nodes) for way in self.tracks)
+            self._parse_file(tmpfilename)
+            point_last_time = sum(len(way.nodes) for way in self.tracks) - old_points_total
+            page += 1
+            print "Got %d points in the last run" % point_last_time
+
+
+    def _parse_file(self, filename):
         parser = xml.sax.make_parser()
-        parser.setContentHandler(GPXParser())
+        parser.setContentHandler(GPXParser(self))
         parser.parse(filename)
 
-        print "Obtained %d tracks from file %s" % (len(self.tracks), filename)
+    def save(self, filename):
+        fp = open(filename, 'w')
+        fp.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        fp.write("<gpx version=\"1.0\" creator=\"PyOSM\" xmlns=\"http://www.topografix.com/GPS/1/0/\">\n")
+        for track in self.tracks:
+            fp.write(" <trk>\n  <trkseg>\n")
+            for node in track.nodes:
+                fp.write('   <trkpt lat="%s" lon="%s" />\n' % (node.lat, node.lon))
+            fp.write("  </trkseg>\n </trk>\n")
+        fp.write("</gpx>")
+        fp.close()
 
 class GPXParser(xml.sax.ContentHandler):
     """
@@ -213,7 +243,9 @@ class GPXParser(xml.sax.ContentHandler):
             self.__current_way.nodes.append(Node(lat=attrs['lat'], lon=attrs['lon']))
 
     def endElement(self, name):
-        self.containing_obj.tracks.append(self.__current_way)
+        if name == 'trkseg':
+            self.containing_obj.tracks.append(self.__current_way)
+            self.__current_way = None
 
 
 
