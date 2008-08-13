@@ -204,6 +204,7 @@ class GPSData(object):
             urllib.urlretrieve(url % page, filename=tmpfilename )
             old_points_total = sum(len(way.nodes) for way in self.tracks)
             self._parse_file(tmpfilename)
+            os.remove(tmpfilename)
             point_last_time = sum(len(way.nodes) for way in self.tracks) - old_points_total
             page += 1
 
