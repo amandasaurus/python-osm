@@ -33,7 +33,7 @@ class BBox(object):
             self.right = kwargs['right']
             self.top = kwargs['top']
             self.bottom = kwargs['bottom']
-        elif sorted(kwargs.keys()) == ['maxlat', 'maxlon', 'minlat', 'minlon']
+        elif sorted(kwargs.keys()) == ['maxlat', 'maxlon', 'minlat', 'minlon']:
             self.left = kwargs['minlat']
             self.right = kwargs['maxlat']
             self.bottom = kwargs['maxlon']
