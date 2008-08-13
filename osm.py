@@ -3,6 +3,71 @@ import xml.sax, math, tempfile, urllib
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
 
+class Property(object):
+    """
+    A metaclass to make it easy to add properties to objects
+    """
+    class __metaclass__(type):
+        def __init__(cls, name, bases, dct):
+            for fname in ['get', 'set', 'delete']:
+                if fname in dct:
+                    setattr(cls, fname, staticmethod(dct[fname]))
+        def __get__(cls, obj, objtype=None):
+            if obj is None:
+                return cls
+            fget = getattr(cls, 'get')
+            return fget(obj)
+        def __set__(cls, obj, value):
+            fset = getattr(cls, 'set')
+            fset(obj, value)
+        def __delete__(cls, obj):
+            fdel = getattr(cls, 'delete')
+            fdel(obj)
+
+
+class BBox(object):
+    __slots__ = ['left', 'right', 'top', 'bottom']
+    def __init__(self, *args, **kwargs):
+        if sorted(kwargs.keys()) == ['bottom', 'left', 'right', 'top']:
+            self.left = kwargs['left']
+            self.right = kwargs['right']
+            self.top = kwargs['top']
+            self.bottom = kwargs['bottom']
+        elif sorted(kwargs.keys()) == ['maxlat', 'maxlon', 'minlat', 'minlon']
+            self.left = kwargs['minlat']
+            self.right = kwargs['maxlat']
+            self.bottom = kwargs['maxlon']
+            self.top = kwargs['minlon']
+        else:
+            raise TypeError("Insufficent arguments to BBox contsructor")
+
+    class minlat(Property):
+        def get(self):
+            return self.left
+        def set(self, value):
+            self.left = value
+
+    class maxlat(Property):
+        def get(self):
+            return self.right
+        def set(self, value):
+            self.right = value
+
+    class minlon(Property):
+        def get(self):
+            return self.top
+        def set(self, value):
+            self.top = value
+
+    class maxlon(Property):
+        def get(self):
+            return self.bottom
+        def set(self, value):
+            self.bottom = value
+
+    def __repr__(self):
+        return "BBox(left=%r, bottom=%r, right=%r, top=%r)" % (self.left, self.bottom, self.right, self.top)
+
 class Node(object):
     __slots__ = ['id', 'lon', 'lat', 'tags']
 
