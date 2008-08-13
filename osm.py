@@ -68,6 +68,12 @@ class BBox(object):
     def __repr__(self):
         return "BBox(left=%r, bottom=%r, right=%r, top=%r)" % (self.left, self.bottom, self.right, self.top)
 
+    def __in__(self, obj):
+        if instanceof(obj, Node):
+            return self.minlat < node.lat < self.maxlat and self.minlon < node.lon < self.maxlon
+        else:
+            raise TypeError("Object %r is not a node" % obj)
+
 class Node(object):
     __slots__ = ['id', 'lon', 'lat', 'tags']
 
