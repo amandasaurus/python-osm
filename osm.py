@@ -254,24 +254,22 @@ class GPSData(object):
     """
     Downloads data GPS track data from OpenStreetMap Server
     """
-    def __init__(self, left, bottom, right, top, download=True):
-        self.left = left
-        self.bottom = bottom
-        self.right = right
-        self.top = top
+    def __init__(self, bbox, download=True):
+        self.bbox = bbox
         self.tracks = []
         if download:
             self._download_from_api()
 
     def _download_from_api(self):
-        url = "http://api.openstreetmap.org/api/0.5/trackpoints?bbox=%s,%s,%s,%s&page=%%d" % (self.left, self.bottom, self.right, self.top)
+        url = "http://api.openstreetmap.org/api/0.5/trackpoints?bbox=%s,%s,%s,%s&page=%%d" % (
+            self.bbox.left, self.bbox.bottom, self.bbox.right, self.bbox.top)
 
         page = 0
         point_last_time = None
 
         while page == 0 or point_last_time == 5000:
             tmpfile_fp, tmpfilename = tempfile.mkstemp(suffix=".gpx",
-                prefix="osm-gps_%s,%s,%s,%s_%d_" % (self.left, self.bottom, self.right, self.top, page))
+                prefix="osm-gps_%s,%s,%s,%s_%d_" % (self.bbox.left, self.bbox.bottom, self.bbox.right, self.bbox.top, page))
             urllib.urlretrieve(url % page, filename=tmpfilename )
             old_points_total = sum(len(way.nodes) for way in self.tracks)
             self._parse_file(tmpfilename)
