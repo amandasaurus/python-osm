@@ -1,5 +1,5 @@
 #! /usr/bin/python
-import xml.sax, math, tempfile, urllib
+import xml.sax, math, tempfile, urllib, os
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
 
