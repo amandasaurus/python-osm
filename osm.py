@@ -323,7 +323,6 @@ class OSMServer(object):
         self.api_root = api_root
 
     def _get_data(self, subpath):
-        print self.api_root + subpath
         if subpath[0] != '/' and self.api_root[-1] != '/':
             # print a warning?
             pass
