@@ -318,9 +318,26 @@ class GPXParser(xml.sax.ContentHandler):
             self.containing_obj.tracks.append(self.__current_way)
             self.__current_way = None
 
+class OSMServer(object):
+    def __init__(self, api_root):
+        self.api_root = api_root
+
+    def _get_data(self, subpath):
+        print self.api_root + subpath
+        if subpath[0] != '/' and self.api_root[-1] != '/':
+            # print a warning?
+            pass
+        return urllib2.urlopen(self.api_root + subpath).read()
 
 
-def api_get_node(node_id):
-    url = "%s/node/%s" % (OSM_API_BASE_URL, node_id)
-    print url
+    def _get_node(self, node_id):
+        osm_data = OSMXMLFile(self._get_data("node/%s" % node_id))
+
+        if len(osm_data.nodes) == 0:
+            # no nodes found
+            return None
+        elif len(osm_data.nodes) == 1:
+            return osm_data.nodes[0]
+
+
 
