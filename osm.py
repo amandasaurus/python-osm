@@ -1,5 +1,5 @@
 #! /usr/bin/python
-import xml.sax, math, tempfile, urllib, os
+import xml.sax, math, tempfile, urllib, urllib2, os
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
 
@@ -168,8 +168,8 @@ class Relation(object):
 
 
 class OSMXMLFile(object):
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, datasource):
+        self.datasource = datasource
 
         self.nodes = {}
         self.ways = {}
@@ -180,9 +180,11 @@ class OSMXMLFile(object):
 
     def __parse(self):
         """Parse the given XML file"""
-        parser = xml.sax.make_parser()
-        parser.setContentHandler(OSMXMLFileParser(self))
-        parser.parse(self.filename)
+
+        if isinstance(self.datasource, basestring):
+            parser = xml.sax.parseString(self.datasource, OSMXMLFileParser(self))
+        else:
+            parser = xml.sax.parse(self.datasource, OSMXMLFileParser(self))
 
         # now fix up all the refereneces
         for index, way in self.ways.items():
