@@ -329,7 +329,7 @@ class OSMServer(object):
         return urllib2.urlopen(self.api_root + subpath).read()
 
 
-    def _get_node(self, node_id):
+    def node(self, node_id):
         osm_data = OSMXMLFile(self._get_data("node/%s" % node_id))
 
         if len(osm_data.nodes) == 0:
@@ -337,6 +337,25 @@ class OSMServer(object):
             return None
         elif len(osm_data.nodes) == 1:
             return osm_data.nodes[0]
+
+    def way(self, way_id):
+        osm_data = OSMXMLFile(self._get_data("way/%s" % way_id))
+
+        if len(osm_data.ways) == 0:
+            # no ways found
+            return None
+        elif len(osm_data.ways) == 1:
+            return osm_data.ways[0]
+
+    def relation(self, relation_id):
+        osm_data = OSMXMLFile(self._get_data("relation/%s" % relation_id))
+
+        if len(osm_data.relations) == 0:
+            # no relations found
+            return None
+        elif len(osm_data.relations) == 1:
+            return osm_data.relations[0]
+
 
 
 
