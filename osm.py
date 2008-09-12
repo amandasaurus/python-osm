@@ -341,3 +341,4 @@ class OSMServer(object):
 
 
 
+osm_web = OSMServer("http://api.openstreetmap.org/api/0.5/")
