@@ -1,5 +1,6 @@
 #! /usr/bin/python
 import xml.sax, math, tempfile, urllib, urllib2, os
+import StringIO
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
 
@@ -356,6 +357,23 @@ class OSMServer(object):
         elif len(osm_data.relations) == 1:
             return osm_data.relations[0]
 
+
+# Mark Pilgram's excellent openAnything
+def open_anything(source):
+    # try to open with urllib (if source is http, ftp, or file URL)
+    try:
+        return urllib.urlopen(source)
+    except (IOError, OSError):
+        pass
+
+    # try to open with native open function (if source is pathname)
+    try:
+        return open(source)
+    except (IOError, OSError):
+        pass
+
+    # treat source as string
+    return StringIO.StringIO(str(source))
 
 
 
