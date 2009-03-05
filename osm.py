@@ -178,8 +178,9 @@ class Relation(object):
 
 
 class OSMXMLFile(object):
-    def __init__(self, datasource):
+    def __init__(self, datasource, parser=None):
         self.datasource = datasource
+
 
         self.nodes = {}
         self.ways = {}
@@ -191,10 +192,15 @@ class OSMXMLFile(object):
     def __parse(self):
         """Parse the given XML file"""
 
-        if isinstance(self.datasource, basestring):
-            parser = xml.sax.parseString(self.datasource, OSMXMLFileParser(self))
+        if self.parser:
+            parser = self.parser(self)
         else:
-            parser = xml.sax.parse(self.datasource, OSMXMLFileParser(self))
+            parser = OSMXMLFileParser(self)
+
+        if isinstance(self.datasource, basestring):
+            parser = xml.sax.parseString(self.datasource, parser)
+        else:
+            parser = xml.sax.parse(self.datasource, parser)
 
         # now fix up all the refereneces
         for index, way in self.ways.items():
