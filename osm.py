@@ -258,11 +258,23 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
         #print "End of node " + name
         #assert not self.curr_node and not self.curr_way, "curr_node (%r) and curr_way (%r) are both non-None" % (self.curr_node, self.curr_way)
         if name == "node":
-            self.containing_obj.nodes[self.curr_node.id] = self.curr_node
+
+            node = self.filter(self.curr_node)
+            if node is not None:
+                self.containing_obj.nodes[node.id] = node
+
             self.curr_node = None
+
         elif name == "way":
-            self.containing_obj.ways[self.curr_way.id] = self.curr_way
+
+            way = self.filter(self.curr_way)
+            if way is not None:
+                self.containing_obj.ways[way.id] = way
+
             self.curr_way = None
+
+    def filter(self, item):
+        return item
 
 class GPSData(object):
     """
