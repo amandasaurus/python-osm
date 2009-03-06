@@ -178,9 +178,9 @@ class Relation(object):
 
 
 class OSMXMLFile(object):
-    def __init__(self, datasource, parser=None):
+    def __init__(self, datasource, parser_filter=None):
         self.datasource = datasource
-        self.parser = parser
+        self.parser_filter = parser_filter
 
 
         self.nodes = {}
@@ -193,15 +193,10 @@ class OSMXMLFile(object):
     def __parse(self):
         """Parse the given XML file"""
 
-        if self.parser:
-            parser = self.parser(self)
-        else:
-            parser = OSMXMLFileParser(self)
-
         if isinstance(self.datasource, basestring):
-            parser = xml.sax.parseString(self.datasource, parser)
+            parser = xml.sax.parseString(self.datasource, OSMXMLFileParser(self, filter=self.parser_filter))
         else:
-            parser = xml.sax.parse(self.datasource, parser)
+            parser = xml.sax.parse(self.datasource, OSMXMLFileParser(self, filter=self.parser_filter))
 
         # now fix up all the refereneces
         for index, way in self.ways.items():
@@ -219,11 +214,17 @@ class OSMXMLFile(object):
 
 
 class OSMXMLFileParser(xml.sax.ContentHandler):
-    def __init__(self, containing_obj):
+    def __init__(self, containing_obj, filter=None):
         self.containing_obj = containing_obj
         self.curr_node = None
         self.curr_way = None
         self.curr_relation = None
+
+        if filter:
+            self.filter = filter
+        else:
+            # We're not doin any filtering
+            self.filter = lambda item: item
 
     def startElement(self, name, attrs):
         #print "Start of node " + name
@@ -279,9 +280,6 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
                 self.containing_obj.ways[way.id] = way
 
             self.curr_way = None
-
-    def filter(self, item):
-        return item
 
 class GPSData(object):
     """
