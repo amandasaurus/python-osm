@@ -180,6 +180,7 @@ class Relation(object):
 class OSMXMLFile(object):
     def __init__(self, datasource, parser=None):
         self.datasource = datasource
+        self.parser = parser
 
 
         self.nodes = {}
