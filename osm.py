@@ -146,6 +146,15 @@ class WayPlaceHolder(object):
     def __repr__(self):
         return "WayPlaceHolder(id=%r)" % (self.id)
 
+class RelationPlaceHolder(object):
+    __slots__ = ['id']
+
+    def __init__(self, id):
+        self.id = id
+
+    def __repr__(self):
+        return "RelationPlaceHolder(id=%r)" % (self.id)
+
 class Relation(object):
     __slots__ = ['id', 'roles', 'tags']
 
@@ -235,6 +244,8 @@ class OSMXMLFileParser(xml.sax.ContentHandler):
                 self.curr_relation.add(WayPlaceHolder(id=attrs['ref']), role=attrs['role'])
             elif attrs['type'] == 'node':
                 self.curr_relation.add(NodePlaceHolder(id=attrs['ref']), role=attrs['role'])
+            elif attrs['type'] == 'relation':
+                self.curr_relation.add(RelationPlaceHolder(id=attrs['ref']), role=attrs['role'])
             else:
                 assert False, "Unknown member type "+repr(attrs['type'])
         elif name in ["osm", "bounds"]:
