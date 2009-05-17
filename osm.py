@@ -1,5 +1,5 @@
 #! /usr/bin/python
-import xml.sax, math, tempfile, urllib, urllib2, os
+import xml.sax, math, tempfile, urllib, urllib2, os, math
 import StringIO
 
 OSM_API_BASE_URL = "http://api.openstreetmaps.org/api/0.5"
@@ -402,6 +402,22 @@ def open_anything(source):
 
     # treat source as string
     return StringIO.StringIO(str(source))
+
+
+def deg_to_tiles(lat_deg, lon_deg, zoom):
+    lat_rad = lat_deg * math.pi / 180.0
+    n = 2.0 ** zoom
+    xtile = int((lon_deg + 180.0) / 360.0 * n)
+    ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+    return (xtile, ytile)
+
+def tiles_to_deg(xtile, ytile, zoom):
+    n = 2.0 ** zoom
+    lon_deg = xtile / n * 360.0 - 180.0
+    lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
+    lat_deg = lat_rad * 180.0 / math.pi
+    return (lat_deg, lon_deg)
+
 
 
 
